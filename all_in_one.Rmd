@@ -1,16 +1,19 @@
 ---
 title: "Scraping and formatting ICSID case data"
 author: "Maximillian Mantei"
-date: "4. August 2015"
-output: 
-  html_document: 
-    highlight: textmate
-    theme: journal
+date: "4 August 2015"
+output:
+  html_document:
+    keep_md: yes
+    toc: yes
+  pdf_document:
+    highlight: monochrome
+    number_sections: yes
     toc: yes
 ---
 
-## Part 1: Pulling the data
-### Start
+# Pulling the data
+## Start
 This is the beginning of ``pulling_claims.R``. First the required packages are loaded. *RSelenium* is used to start a remote browser to load the ICSID website and retrieve all case numbers. *rvest* is used to scrape the individual case details websites. *dplyr* is used for data manipulation and the handy ``%>%`` infix operator (takes everything that is left from it and makes it the first argument of a function to the right of it). ``setwd`` sets the working directory on the local machine.
 ```{r eval = FALSE}
 ################################################################################
@@ -31,7 +34,7 @@ wd <- "C:/GitHub/ICSID_claims/"
 setwd(wd)
 ```
 
-### Get case IDs
+## Get case IDs
 RSelenium is usd to remotely browse to the [ICSID cases]("https://icsid.worldbank.org/apps/ICSIDWEB/cases/Pages/AdvancedSearch.aspx"). Then the button to show all results is clicked to get the complete list of cases, which is then retrieved. The case ID is later used to loop through the case detail pages, which are all static so the remote browser is no longer needed.
 
 ```{r eval = FALSE}
@@ -64,7 +67,7 @@ cases[, 1] <- sapply(cases[, 1], function(x) {gsub(" ", "%20", x)})
 remDr$close()
 ```
 
-### Get case data
+## Get case data
 The list of case IDs is used to loop through every individual case website. Before starting the loop some CSS selectors are defined. They identify the bits of data in the html file that we want to extract. The results are saved in ``data/cases_fresh.csv``.
 
 ```{r eval = FALSE}
@@ -123,8 +126,8 @@ write.csv(cases, "data/cases_fresh.csv", append = FALSE)
 source("cleaning_claims.R")
 ```
 
-## Part 2: Cleaning the data
-### Start
+# Cleaning the data
+## Start
 
 ```{r, eval = FALSE}
 ################################################################################
@@ -149,7 +152,7 @@ setwd(wd)
 cases <- read.csv("data/cases_fresh.csv", stringsAsFactors = FALSE)
 ```
 
-### Extracting data from text strings
+## Extracting data from text strings
 A lot of data is stored in chuncks of text. The following functions exploit some systematicity of the text strings to get the valuable parts. Also the structure of the data is changed to pairs of countries.
 
 ```{r, eval = FALSE}
@@ -191,7 +194,7 @@ cases <- cases[rep(1:nrow(cases), sapply(claimants_list, function(x){length(x)})
 cases$claimants_nat <- unlist(claimants_list)
 ```
 
-### Correcting errors
+## Correcting errors
 Remove artifacts or meaningless results. Create a dummy when the respondent to the claim is a state owned company.
 
 ```{r, eval = FALSE}
@@ -267,7 +270,7 @@ cases$respondents_nat[cases$Respondent.s. == "United Republic of Cameroon and So
 cases <- cases %>% filter(!is.na(respondents_nat)) %>% distinct()
 ```
 
-### Match WorldBank codes
+## Match WorldBank codes
 The countries are assigned WB codes using a reference file. Results are saved (also as XLSX file for future references).
 
 ```{r, eval = FALSE}
@@ -310,8 +313,8 @@ write.xlsx(cases, file_name, sheetName = "ICSID",
 source("formatting_claims.R")
 ```
 
-## Part 3: Formatting the data
-### Start
+# Part 3: Formatting the data
+## Start
 
 ```{r eval = FALSE}
 ################################################################################
@@ -334,7 +337,7 @@ setwd(wd)
 cases <- read.csv("data/cases.csv", stringsAsFactors = FALSE)
 ```
 
-### Generating summary variables 
+## Generating summary variables 
 First a grid of all possible combinations of **host**, **source** and all **year**s from 1975 to 2015 is generated. The case data is inserted and the summary variables are generated. HEAVY USE OF THE *dplyr* PACKAGE! Results are saved as CSV and DTA file (for a seamless merge later).
 
 ```{r eval = FALSE}
