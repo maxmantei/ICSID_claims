@@ -310,7 +310,7 @@ write.xlsx(cases, file_name, sheetName = "ICSID",
 source("formatting_claims.R")
 ```
 
-# Part 3: Formatting the data
+# Formatting the data
 ## Start
 
 

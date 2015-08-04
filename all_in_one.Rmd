@@ -3,12 +3,12 @@ title: "Scraping and formatting ICSID case data"
 author: "Maximillian Mantei"
 date: "4 August 2015"
 output:
-  html_document:
-    keep_md: yes
-    toc: yes
   pdf_document:
     highlight: monochrome
     number_sections: yes
+    toc: yes
+  html_document:
+    keep_md: yes
     toc: yes
 ---
 
@@ -313,7 +313,7 @@ write.xlsx(cases, file_name, sheetName = "ICSID",
 source("formatting_claims.R")
 ```
 
-# Part 3: Formatting the data
+# Formatting the data
 ## Start
 
 ```{r eval = FALSE}
